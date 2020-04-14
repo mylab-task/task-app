@@ -2,6 +2,31 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <Authors>Andrey O.</Authors>
+    <Company>Andrey O.</Company>
+    <Description>.NET Core task-application framework</Description>
+    <Copyright>Copyright (c) 2020 Andrey Osintsev &lt;ozzy.ext@gmail.com&gt;</Copyright>
+    <RepositoryUrl>https://github.com/ozzy-ext-mylab/task-app.git</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/ozzy-ext-mylab/task-app</PackageProjectUrl>
+    <RepositoryType>git</RepositoryType>
+    <AssemblyVersion>1.0.0.1404</AssemblyVersion>
+    <FileVersion>1.0.0.1404</FileVersion>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MyLab.LogDsl" Version="2.0.0" />
+    <PackageReference Include="MyLab.StatusProvider" Version="1.2.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions">
+      <HintPath>..\..\..\..\..\..\..\..\Program Files\dotnet\packs\Microsoft.AspNetCore.App.Ref\3.1.0\ref\netcoreapp3.1\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
+    </Reference>
+  </ItemGroup>
 
 </Project>
