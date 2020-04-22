@@ -11,14 +11,25 @@ namespace MyLab.TaskApp
     public static class TaskLogicIntegration
     {
         /// <summary>
-        /// Integrate task logic into DI container
+        /// Integrate task logic into DI container as singleton
         /// </summary>
         public static IServiceCollection AddTaskLogic<T>(this IServiceCollection srv, T logic)
-            where T : ITaskLogic
+            where T : class, ITaskLogic
         {
             return srv
                 .AddTaskStatusProviding()
                 .AddSingleton<ITaskLogic>(logic);
+        }
+
+        /// <summary>
+        /// Integrate task logic into DI container with scoped lifetime
+        /// </summary>
+        public static IServiceCollection AddTaskLogic<T>(this IServiceCollection srv)
+            where T : class, ITaskLogic
+        {
+            return srv
+                .AddTaskStatusProviding()
+                .AddSingleton<ITaskLogic, T>();
         }
 
         /// <summary>
