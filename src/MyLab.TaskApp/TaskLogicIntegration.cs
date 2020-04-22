@@ -17,7 +17,7 @@ namespace MyLab.TaskApp
             where T : class, ITaskLogic
         {
             return srv
-                .AddTaskStatusProviding()
+                .AddSingleton<ITaskStatusService, DefaultTaskStatusService>()
                 .AddSingleton<ITaskLogic>(logic);
         }
 
@@ -28,32 +28,29 @@ namespace MyLab.TaskApp
             where T : class, ITaskLogic
         {
             return srv
-                .AddTaskStatusProviding()
+                .AddSingleton<ITaskStatusService, DefaultTaskStatusService>()
                 .AddSingleton<ITaskLogic, T>();
         }
 
         /// <summary>
         /// Integrates url handling
         /// </summary>
-        public static void AddTaskLogicApi(this IApplicationBuilder app, string basePath = null)
+        public static IApplicationBuilder UseTaskApi(this IApplicationBuilder app, string path = "/processing")
         {
-            app.AddStatusApi((basePath?.TrimEnd('/') ?? string.Empty) + "/status");
-
-            var processingPath = (basePath?.TrimEnd('/') ?? string.Empty) + "/processing";
-
             app.MapWhen(ctx =>
-                ctx.Request.Path == processingPath && ctx.Request.Method == "GET",
+                ctx.Request.Path == path && ctx.Request.Method == "GET",
                 appB =>
                 {
                     appB.Run(async context => await TaskLogicApiHandler.GetStatus(app, context));
                 });
 
             app.MapWhen(ctx =>
-                ctx.Request.Path == processingPath && ctx.Request.Method == "POST",
+                ctx.Request.Path == path && ctx.Request.Method == "POST",
                 appB =>
                 {
                     appB.Run(async context => await TaskLogicApiHandler.StartLogic(app, context));
                 });
+            return app;
         }
     }
 }

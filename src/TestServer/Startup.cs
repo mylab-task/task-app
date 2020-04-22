@@ -3,7 +3,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using MyLab.StatusProvider;
 using MyLab.TaskApp;
+using Newtonsoft.Json;
 
 namespace TestServer
 {
@@ -20,7 +22,10 @@ namespace TestServer
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            services.AddTaskLogic(new SuccessTaskLogic());
+            services
+                .AddTaskLogic(new SuccessTaskLogic())
+                .AddAppStatusProviding();
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -31,16 +36,20 @@ namespace TestServer
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseRouting();
-
-            app.UseAuthorization();
-
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
-
-            app.AddTaskLogicApi();
+            app
+                .UseRouting()
+                .UseAuthorization()
+                .UseEndpoints(endpoints =>
+                {
+                    endpoints.MapControllers();
+                })
+                .UseTaskApi()
+                .UseStatusApi(serializerSettings:new JsonSerializerSettings
+                {
+                    Formatting = Formatting.Indented,
+                    NullValueHandling = NullValueHandling.Ignore,
+                    TypeNameHandling = TypeNameHandling.All
+                });
         }
     }
 }
