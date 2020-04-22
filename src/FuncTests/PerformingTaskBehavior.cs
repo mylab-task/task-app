@@ -3,11 +3,11 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Testing;
 using MyLab.StatusProvider;
+using MyLab.TaskApp;
 using Newtonsoft.Json;
 using TestServer;
 using Xunit;
 using Xunit.Abstractions;
-using TaskStatus = MyLab.StatusProvider.TaskStatus;
 
 namespace FuncTests
 {
@@ -39,15 +39,19 @@ namespace FuncTests
 
             _output.WriteLine(statusStr);
 
-            var status = JsonConvert.DeserializeObject<ApplicationStatus>(statusStr);
+            var appStatus = JsonConvert.DeserializeObject<ApplicationStatus>(statusStr, new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.Auto
+            });
+            var status = appStatus.GetSubStatus<TaskAppStatus>();
 
             //Assert
             Assert.NotNull(status);
-            Assert.True(status.Task.Processing);
-            Assert.Null(status.Task.LastTimeDuration);
-            Assert.Null(status.Task.LastTimeError);
-            Assert.NotNull(status.Task.LastTimeStart);
-            Assert.True(status.Task.LastTimeStart.Value.AddSeconds(1) > DateTime.Now);
+            Assert.True(status.Processing);
+            Assert.Null(status.LastTimeDuration);
+            Assert.Null(status.LastTimeError);
+            Assert.NotNull(status.LastTimeStart);
+            Assert.True(status.LastTimeStart.Value.AddSeconds(1) > DateTime.Now);
         }
 
         [Fact]
@@ -66,7 +70,7 @@ namespace FuncTests
 
             _output.WriteLine(statusStr);
 
-            var status = JsonConvert.DeserializeObject<TaskStatus>(statusStr);
+            var status = JsonConvert.DeserializeObject<TaskAppStatus>(statusStr);
 
             //Assert
             Assert.NotNull(status);

@@ -2,11 +2,11 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Testing;
 using MyLab.StatusProvider;
+using MyLab.TaskApp;
 using Newtonsoft.Json;
 using TestServer;
 using Xunit;
 using Xunit.Abstractions;
-using TaskStatus = MyLab.StatusProvider.TaskStatus;
 
 namespace FuncTests
 {
@@ -35,14 +35,14 @@ namespace FuncTests
 
             _output.WriteLine(statusStr);
 
-           var status = JsonConvert.DeserializeObject<ApplicationStatus>(statusStr);
+           var status = JsonConvert.DeserializeObject<TaskAppStatus>(statusStr);
 
             //Assert
             Assert.NotNull(status);
-            Assert.False(status.Task.Processing);
-            Assert.Null(status.Task.LastTimeDuration);
-            Assert.Null(status.Task.LastTimeError);
-            Assert.Null(status.Task.LastTimeStart);
+            Assert.False(status.Processing);
+            Assert.Null(status.LastTimeDuration);
+            Assert.Null(status.LastTimeError);
+            Assert.Null(status.LastTimeStart);
         }
 
         [Fact]
@@ -59,7 +59,7 @@ namespace FuncTests
 
             _output.WriteLine(statusStr);
 
-            var status = JsonConvert.DeserializeObject<TaskStatus>(statusStr);
+            var status = JsonConvert.DeserializeObject<TaskAppStatus>(statusStr);
 
             //Assert
             Assert.NotNull(status);

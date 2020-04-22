@@ -13,7 +13,7 @@ namespace MyLab.TaskApp
     {
         public static async Task GetStatus(IApplicationBuilder app, HttpContext context)
         {
-            var statusService = (IAppStatusService)app.ApplicationServices.GetService(typeof(IAppStatusService));
+            var statusService = (ITaskStatusService)app.ApplicationServices.GetService(typeof(ITaskStatusService));
             if (statusService == null)
             {
                 context.Response.StatusCode = 404;
@@ -21,7 +21,7 @@ namespace MyLab.TaskApp
             }
             else
             {
-                var status = statusService.GetStatus().Task;
+                var status = statusService.GetStatus();
                 var statusTxt = JsonConvert.SerializeObject(status, new JsonSerializerSettings
                 {
                     Formatting = Formatting.Indented,
@@ -45,7 +45,7 @@ namespace MyLab.TaskApp
                 return;
             }
 
-            var statusService = (IAppStatusService)app.ApplicationServices.GetService(typeof(IAppStatusService));
+            var statusService = (ITaskStatusService)app.ApplicationServices.GetService(typeof(ITaskStatusService));
             if (statusService == null)
             {
                 context.Response.StatusCode = 404;
@@ -54,7 +54,8 @@ namespace MyLab.TaskApp
                 return;
             }
 
-            if (statusService.GetStatus().Task.Processing)
+            var status = statusService.GetStatus();
+            if (status == null || status.Processing)
             {
                 context.Response.StatusCode = 208;
                 await context.Response.WriteAsync("Already processing");

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.TagHelpers.Cache;
 using Microsoft.AspNetCore.Mvc.Testing;
 using MyLab.StatusProvider;
+using MyLab.TaskApp;
 using Newtonsoft.Json;
 using TestServer;
 using Xunit;
@@ -39,17 +41,21 @@ namespace FuncTests
 
             _output.WriteLine(statusStr);
 
-            var status = JsonConvert.DeserializeObject<ApplicationStatus>(statusStr);
+            var appStatus = JsonConvert.DeserializeObject<ApplicationStatus>(statusStr, new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.Auto
+            });
+            var status = appStatus.GetSubStatus<TaskAppStatus>();
 
             //Assert
             Assert.NotNull(status);
-            Assert.False(status.Task.Processing);
-            Assert.NotNull(status.Task.LastTimeDuration);
-            Assert.True(status.Task.LastTimeDuration.Value.TotalMilliseconds < 200);
-            Assert.NotNull(status.Task.LastTimeError);
-            Assert.Equal("foo", status.Task.LastTimeError.Message);
-            Assert.NotNull(status.Task.LastTimeStart);
-            Assert.True(status.Task.LastTimeStart.Value.AddSeconds(1) > DateTime.Now);
+            Assert.False(status.Processing);
+            Assert.NotNull(status.LastTimeDuration);
+            Assert.True(status.LastTimeDuration.Value.TotalMilliseconds < 200);
+            Assert.NotNull(status.LastTimeError);
+            Assert.Equal("foo", status.LastTimeError.Message);
+            Assert.NotNull(status.LastTimeStart);
+            Assert.True(status.LastTimeStart.Value.AddSeconds(1) > DateTime.Now);
         }
 
         [Fact]
@@ -69,7 +75,7 @@ namespace FuncTests
 
             _output.WriteLine(statusStr);
 
-            var status = JsonConvert.DeserializeObject<MyLab.StatusProvider.TaskStatus>(statusStr);
+            var status = JsonConvert.DeserializeObject<TaskAppStatus>(statusStr);
 
             //Assert
             Assert.NotNull(status);
