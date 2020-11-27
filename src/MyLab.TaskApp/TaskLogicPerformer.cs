@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using MyLab.LogDsl;
-using MyLab.StatusProvider;
 
 namespace MyLab.TaskApp
 {
@@ -29,7 +29,7 @@ namespace MyLab.TaskApp
             {
                 StatusService.LogicStarted();
                 Logger?.Act("Task logic has started");
-                await TaskLogic.Perform();
+                await TaskLogic.Perform(CancellationToken.None);
                 StatusService.LogicCompleted();
                 Logger?.Act("Task logic has completed");
             }

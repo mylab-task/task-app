@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 
 namespace MyLab.TaskApp
 {
@@ -10,6 +11,6 @@ namespace MyLab.TaskApp
         /// <summary>
         /// Performs a task logic
         /// </summary>
-        Task Perform();
+        Task Perform(CancellationToken cancellationToken);
     }
 }
