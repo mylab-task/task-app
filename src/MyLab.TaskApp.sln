@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyLab.TaskApp", "MyLab.Task
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestServer", "TestServer\TestServer.csproj", "{B20B8392-C31F-40DC-BA17-76EE1675BD87}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FuncTests", "FuncTests\FuncTests.csproj", "{3FBD648A-0413-40EB-A8EB-C2A039AC1217}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FuncTests", "FuncTests\FuncTests.csproj", "{3FBD648A-0413-40EB-A8EB-C2A039AC1217}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

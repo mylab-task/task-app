@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using MyLab.LogDsl;
+using MyLab.Log.Dsl;
 
 namespace MyLab.TaskApp
 {
@@ -12,7 +12,7 @@ namespace MyLab.TaskApp
     {
         private readonly ITaskLogic _logic;
         private readonly ITaskStatusService _statusService;
-        private readonly DslLogger _log;
+        private readonly IDslLogger _log;
         private readonly TimeSpan _period;
 
         public CirclePerformer(

@@ -1,4 +1,4 @@
-# MyLab.AsyncProcessor
+# MyLab.TaskApp
 [![NuGet Version and Downloads count](https://buildstats.info/nuget/MyLab.TaskApp)](https://www.nuget.org/packages/MyLab.TaskApp)
 
 ```

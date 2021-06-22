@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using MyLab.LogDsl;
+using MyLab.Log.Dsl;
 
 namespace MyLab.TaskApp
 {
@@ -10,7 +10,7 @@ namespace MyLab.TaskApp
         public ITaskLogic TaskLogic { get; }
         public ITaskStatusService StatusService { get; }
 
-        public DslLogger Logger { get; set; }
+        public IDslLogger Logger { get; set; }
 
         public TaskLogicPerformer(ITaskLogic taskLogic, ITaskStatusService statusService)
         {
@@ -28,10 +28,10 @@ namespace MyLab.TaskApp
             try
             {
                 StatusService.LogicStarted();
-                Logger?.Act("Task logic has started");
+                Logger?.Action("Task logic has started");
                 await TaskLogic.Perform(CancellationToken.None);
                 StatusService.LogicCompleted();
-                Logger?.Act("Task logic has completed");
+                Logger?.Action("Task logic has completed");
             }
             catch (Exception e)
             {
