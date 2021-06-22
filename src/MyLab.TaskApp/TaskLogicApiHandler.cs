@@ -1,10 +1,8 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using MyLab.LogDsl;
-using MyLab.StatusProvider;
+using MyLab.Log.Dsl;
 using Newtonsoft.Json;
 
 namespace MyLab.TaskApp
