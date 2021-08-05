@@ -28,15 +28,21 @@ namespace MyLab.TaskApp
             try
             {
                 StatusService.LogicStarted();
-                Logger?.Action("Task logic has started");
+                Logger?
+                    .Action("Task logic has started")
+                    .Write();
                 await TaskLogic.Perform(CancellationToken.None);
                 StatusService.LogicCompleted();
-                Logger?.Action("Task logic has completed");
+                Logger?
+                    .Action("Task logic has completed")
+                    .Write();
             }
             catch (Exception e)
             {
                 StatusService.LogicError(e);
-                Logger?.Error("Task logic has fail", e);
+                Logger?
+                    .Error("Task logic has fail", e)
+                    .Write();
             }
         }
     }
