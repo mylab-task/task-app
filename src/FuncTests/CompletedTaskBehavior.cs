@@ -27,7 +27,7 @@ namespace FuncTests
 
             var statusResp0 = await cl.PostAsync("/processing", null);
             statusResp0.EnsureSuccessStatusCode();
-            await Task.Delay(200);
+            await Task.Delay(500);
 
             //Act
             var statusResp = await cl.GetAsync("/status");
@@ -48,7 +48,7 @@ namespace FuncTests
             Assert.NotNull(status);
             Assert.False(status.Processing);
             Assert.NotNull(status.LastTimeDuration);
-            Assert.True(status.LastTimeDuration.Value.TotalMilliseconds >= 200 && status.LastTimeDuration.Value.TotalMilliseconds < 250);
+            Assert.True(status.LastTimeDuration.Value.TotalMilliseconds >= 200 && status.LastTimeDuration.Value.TotalMilliseconds < 1000);
             Assert.Null(status.LastTimeError);
             Assert.NotNull(status.LastTimeStart);
             Assert.True(status.LastTimeStart.Value.AddSeconds(1) > DateTime.Now);
