@@ -53,13 +53,13 @@ namespace FuncTests
                 _needThrow = needThrow;
             }
 
-            public Task Perform(CancellationToken cancellationToken)
+            public Task<IterationDesc> Perform(CancellationToken cancellationToken)
             {
                 InvokeCount = InvokeCount + 1;
                 if (_needThrow != null)
                     throw _needThrow;
 
-                return Task.CompletedTask;
+                return Task.FromResult(IterationDesc.EmptyIteration);
             }
         }
     }

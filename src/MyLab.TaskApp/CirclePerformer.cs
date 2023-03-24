@@ -5,6 +5,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MyLab.Log.Dsl;
+using MyLab.ProtocolStorage.Client;
 
 namespace MyLab.TaskApp
 {
@@ -16,20 +17,37 @@ namespace MyLab.TaskApp
         public CirclePerformer(
             ITaskLogic logic, 
             IOptions<TaskOptions> options,
+            IProtocolApiV1 protocolApi = null,
             ITaskStatusService statusService = null, 
             ILogger<CirclePerformer> logger = null)
         {
+            var log = logger?.Dsl();
+
+            var opts = options.Value;
+
+            IProtocolWriter protocolWriter = null;
+
+            if (protocolApi != null)
+            {
+                protocolWriter = new ProtocolWriter(
+                    new SafeProtocolIndexerV1(protocolApi, log), 
+                    opts.IterationProtocolId)
+                {
+                    TaskKicker = TaskKicker.Scheduler
+                };
+            }
 
             _logicPerformer = new TaskLogicPerformer(logic, statusService)
             {
-                Logger = logger?.Dsl()
+                Logger = log,
+                ProtocolWriter = protocolWriter
             };
 
             if (options.Value == null || options.Value.IdlePeriod == default)
                 _period = TimeSpan.FromSeconds(1);
             else
             {
-                _period = options.Value.IdlePeriod;
+                _period = opts.IdlePeriod;
             }
         }
 

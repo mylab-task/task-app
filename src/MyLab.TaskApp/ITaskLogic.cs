@@ -11,6 +11,15 @@ namespace MyLab.TaskApp
         /// <summary>
         /// Performs a task logic
         /// </summary>
-        Task Perform(CancellationToken cancellationToken);
+        Task<IterationDesc> Perform(CancellationToken cancellationToken);  
+    }
+
+    /// <summary>
+    /// Contains task iteration result
+    /// </summary>
+    public class IterationDesc
+    {
+        public static readonly IterationDesc EmptyIteration = new IterationDesc{ IsEmptyIteration = true };
+        public bool IsEmptyIteration { get; set; }
     }
 }

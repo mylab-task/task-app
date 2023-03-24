@@ -11,5 +11,10 @@ namespace MyLab.TaskApp
         /// Idle period between iteration when task os circle
         /// </summary>
         public TimeSpan IdlePeriod { get; set; }
+
+        /// <summary>
+        /// Iteration protocol identifier
+        /// </summary>
+        public string IterationProtocolId { get; set; } = "tasks";
     }
 }
