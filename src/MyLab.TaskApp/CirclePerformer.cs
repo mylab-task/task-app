@@ -10,10 +10,8 @@ namespace MyLab.TaskApp
 {
     class CirclePerformer : BackgroundService
     {
-        private readonly ITaskLogic _logic;
-        private readonly ITaskStatusService _statusService;
-        private readonly IDslLogger _log;
         private readonly TimeSpan _period;
+        private readonly TaskLogicPerformer _logicPerformer;
 
         public CirclePerformer(
             ITaskLogic logic, 
@@ -21,9 +19,11 @@ namespace MyLab.TaskApp
             ITaskStatusService statusService = null, 
             ILogger<CirclePerformer> logger = null)
         {
-            _logic = logic;
-            _statusService = statusService;
-            _log = logger.Dsl();
+
+            _logicPerformer = new TaskLogicPerformer(logic, statusService)
+            {
+                Logger = logger?.Dsl()
+            };
 
             if (options.Value == null || options.Value.IdlePeriod == default)
                 _period = TimeSpan.FromSeconds(1);
@@ -37,18 +37,7 @@ namespace MyLab.TaskApp
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                try
-                {
-                    _statusService.LogicStarted();
-                    await _logic.Perform(stoppingToken);
-                    _statusService.LogicCompleted();
-                }
-                catch (Exception e)
-                {
-                    _statusService.LogicError(e);
-                    _log?.Error("Error when perform task logic", e).Write();
-                }
-
+                await _logicPerformer.PerformLogicAsync(stoppingToken);
                 await Task.Delay(_period, stoppingToken);
             }
         }

@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -69,7 +70,7 @@ namespace MyLab.TaskApp
                 Logger = logger.Dsl()
             };
 
-            performer.PerformLogicParallel();
+            performer.PerformLogicParallel(CancellationToken.None);
 
             context.Response.StatusCode = 200;
         

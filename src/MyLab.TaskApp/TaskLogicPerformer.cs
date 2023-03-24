@@ -18,12 +18,12 @@ namespace MyLab.TaskApp
             StatusService = statusService ?? throw new ArgumentNullException(nameof(statusService));
         }
 
-        public void PerformLogicParallel()
+        public void PerformLogicParallel(CancellationToken cancellationToken)
         {
-            Task.Run(PerformLogicAsync);
+            Task.Run(() => PerformLogicAsync(cancellationToken), cancellationToken);
         }
 
-        async Task PerformLogicAsync()
+        public async Task PerformLogicAsync(CancellationToken cancellationToken)
         {
             try
             {
@@ -31,7 +31,7 @@ namespace MyLab.TaskApp
                 Logger?
                     .Action("Task logic has started")
                     .Write();
-                await TaskLogic.Perform(CancellationToken.None);
+                await TaskLogic.Perform(cancellationToken);
                 StatusService.LogicCompleted();
                 Logger?
                     .Action("Task logic has completed")
