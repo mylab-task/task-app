@@ -5,31 +5,49 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MyLab.Log.Dsl;
+using MyLab.ProtocolStorage.Client;
 
 namespace MyLab.TaskApp
 {
     class CirclePerformer : BackgroundService
     {
-        private readonly ITaskLogic _logic;
-        private readonly ITaskStatusService _statusService;
-        private readonly IDslLogger _log;
         private readonly TimeSpan _period;
+        private readonly TaskLogicPerformer _logicPerformer;
 
         public CirclePerformer(
             ITaskLogic logic, 
             IOptions<TaskOptions> options,
+            IProtocolApiV1 protocolApi = null,
             ITaskStatusService statusService = null, 
             ILogger<CirclePerformer> logger = null)
         {
-            _logic = logic;
-            _statusService = statusService;
-            _log = logger.Dsl();
+            var log = logger?.Dsl();
+
+            var opts = options.Value;
+
+            IProtocolWriter protocolWriter = null;
+
+            if (protocolApi != null)
+            {
+                protocolWriter = new ProtocolWriter(
+                    new SafeProtocolIndexerV1(protocolApi, log), 
+                    opts.IterationProtocolId)
+                {
+                    TaskKicker = TaskKicker.Scheduler
+                };
+            }
+
+            _logicPerformer = new TaskLogicPerformer(logic, statusService)
+            {
+                Logger = log,
+                ProtocolWriter = protocolWriter
+            };
 
             if (options.Value == null || options.Value.IdlePeriod == default)
                 _period = TimeSpan.FromSeconds(1);
             else
             {
-                _period = options.Value.IdlePeriod;
+                _period = opts.IdlePeriod;
             }
         }
 
@@ -37,18 +55,7 @@ namespace MyLab.TaskApp
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                try
-                {
-                    _statusService.LogicStarted();
-                    await _logic.Perform(stoppingToken);
-                    _statusService.LogicCompleted();
-                }
-                catch (Exception e)
-                {
-                    _statusService.LogicError(e);
-                    _log?.Error("Error when perform task logic", e).Write();
-                }
-
+                await _logicPerformer.PerformLogicAsync(stoppingToken);
                 await Task.Delay(_period, stoppingToken);
             }
         }

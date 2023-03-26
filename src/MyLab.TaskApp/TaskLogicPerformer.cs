@@ -2,6 +2,8 @@
 using System.Threading;
 using System.Threading.Tasks;
 using MyLab.Log.Dsl;
+using MyLab.ProtocolStorage.Client;
+using MyLab.ProtocolStorage.Client.Models;
 
 namespace MyLab.TaskApp
 {
@@ -9,8 +11,8 @@ namespace MyLab.TaskApp
     {
         public ITaskLogic TaskLogic { get; }
         public ITaskStatusService StatusService { get; }
-
         public IDslLogger Logger { get; set; }
+        public IProtocolWriter ProtocolWriter{ get; set; }
 
         public TaskLogicPerformer(ITaskLogic taskLogic, ITaskStatusService statusService)
         {
@@ -18,12 +20,12 @@ namespace MyLab.TaskApp
             StatusService = statusService ?? throw new ArgumentNullException(nameof(statusService));
         }
 
-        public void PerformLogicParallel()
+        public void PerformLogicParallel(CancellationToken cancellationToken)
         {
-            Task.Run(PerformLogicAsync);
+            Task.Run(() => PerformLogicAsync(cancellationToken), cancellationToken);
         }
 
-        async Task PerformLogicAsync()
+        public async Task PerformLogicAsync(CancellationToken cancellationToken)
         {
             try
             {
@@ -31,7 +33,14 @@ namespace MyLab.TaskApp
                 Logger?
                     .Action("Task logic has started")
                     .Write();
-                await TaskLogic.Perform(CancellationToken.None);
+                
+                var iterationResult = await TaskLogic.Perform(cancellationToken);
+
+                if (ProtocolWriter != null)
+                {
+                    await ProtocolWriter.WriteAsync(iterationResult);
+                }
+
                 StatusService.LogicCompleted();
                 Logger?
                     .Action("Task logic has completed")

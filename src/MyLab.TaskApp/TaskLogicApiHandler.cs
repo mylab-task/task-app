@@ -1,8 +1,12 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using MyLab.Log.Dsl;
+using MyLab.ProtocolStorage.Client;
 using Newtonsoft.Json;
 
 namespace MyLab.TaskApp
@@ -61,15 +65,34 @@ namespace MyLab.TaskApp
                 return;
             }
 
-            var loggerFactory = (ILoggerFactory)app.ApplicationServices.GetService(typeof(ILoggerFactory));
+            var loggerFactory = app.ApplicationServices.GetService<ILoggerFactory>();
             var logger = loggerFactory.CreateLogger("TaskLogic");
+            var dslLog = logger?.Dsl();
+
+            var options = app.ApplicationServices.GetService<IOptions<TaskOptions>>();
+
+            IProtocolApiV1 protocolApi = app.ApplicationServices.GetService<IProtocolApiV1>();
+
+            IProtocolWriter protocolWriter = null;
+
+            if (protocolApi != null)
+            {
+                protocolWriter = new ProtocolWriter(
+                    new SafeProtocolIndexerV1(protocolApi, dslLog),
+                    options.Value.IterationProtocolId
+                    )
+                {
+                    TaskKicker = TaskKicker.Api
+                };
+            }
 
             var performer = new TaskLogicPerformer(taskLogic, statusService)
             {
-                Logger = logger.Dsl()
+                Logger = dslLog,
+                ProtocolWriter = protocolWriter
             };
 
-            performer.PerformLogicParallel();
+            performer.PerformLogicParallel(CancellationToken.None);
 
             context.Response.StatusCode = 200;
         
