@@ -43,7 +43,7 @@ namespace FuncTests
             {
                 TypeNameHandling = TypeNameHandling.Auto
             });
-            var status = appStatus.GetSubStatus<TaskAppStatus>();
+            var status = appStatus?.GetSubStatus<TaskAppStatus>();
 
             //Assert
             Assert.NotNull(status);

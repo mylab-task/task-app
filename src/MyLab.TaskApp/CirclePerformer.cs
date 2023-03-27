@@ -6,6 +6,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MyLab.Log.Dsl;
 using MyLab.ProtocolStorage.Client;
+using MyLab.TaskApp.IterationContext;
+using MyLab.TaskApp.Protocol;
 
 namespace MyLab.TaskApp
 {

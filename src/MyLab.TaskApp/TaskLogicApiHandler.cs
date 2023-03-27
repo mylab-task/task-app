@@ -7,6 +7,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MyLab.Log.Dsl;
 using MyLab.ProtocolStorage.Client;
+using MyLab.TaskApp.IterationContext;
+using MyLab.TaskApp.Protocol;
 using Newtonsoft.Json;
 
 namespace MyLab.TaskApp
@@ -66,7 +68,7 @@ namespace MyLab.TaskApp
             }
 
             var loggerFactory = app.ApplicationServices.GetService<ILoggerFactory>();
-            var logger = loggerFactory.CreateLogger("TaskLogic");
+            var logger = loggerFactory?.CreateLogger("TaskLogic");
             var dslLog = logger?.Dsl();
 
             var options = app.ApplicationServices.GetService<IOptions<TaskOptions>>();
@@ -79,7 +81,7 @@ namespace MyLab.TaskApp
             {
                 protocolWriter = new ProtocolWriter(
                     new SafeProtocolIndexerV1(protocolApi, dslLog),
-                    options.Value.IterationProtocolId
+                    options?.Value.IterationProtocolId
                     )
                 {
                     TaskKicker = TaskKicker.Api

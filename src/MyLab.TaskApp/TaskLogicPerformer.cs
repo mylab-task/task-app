@@ -2,8 +2,8 @@
 using System.Threading;
 using System.Threading.Tasks;
 using MyLab.Log.Dsl;
-using MyLab.ProtocolStorage.Client;
-using MyLab.ProtocolStorage.Client.Models;
+using MyLab.TaskApp.IterationContext;
+using MyLab.TaskApp.Protocol;
 
 namespace MyLab.TaskApp
 {
@@ -33,12 +33,17 @@ namespace MyLab.TaskApp
                 Logger?
                     .Action("Task logic has started")
                     .Write();
-                
-                var iterationResult = await TaskLogic.Perform(cancellationToken);
+
+                var ctx = new TaskIterationContext(
+                    System.Diagnostics.Activity.Current?.TraceId.ToHexString(),
+                    DateTime.Now
+                );
+
+                await TaskLogic.PerformAsync(ctx, cancellationToken);
 
                 if (ProtocolWriter != null)
                 {
-                    await ProtocolWriter.WriteAsync(iterationResult);
+                    await ProtocolWriter.WriteAsync(ctx);
                 }
 
                 StatusService.LogicCompleted();

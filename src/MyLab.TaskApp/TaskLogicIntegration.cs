@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using MyLab.ApiClient;
+using MyLab.ProtocolStorage.Client;
 
 namespace MyLab.TaskApp
 {
@@ -23,7 +25,8 @@ namespace MyLab.TaskApp
 
             return srv
                 .AddSingleton<ITaskStatusService, DefaultTaskStatusService>()
-                .AddSingleton<ITaskLogic>(logic);
+                .AddSingleton<ITaskLogic>(logic)
+                .AddApiClients(r => r.RegisterContract<IProtocolApiV1>());
         }
 
         /// <summary>
@@ -36,7 +39,8 @@ namespace MyLab.TaskApp
 
             return srv
                 .AddSingleton<ITaskStatusService, DefaultTaskStatusService>()
-                .AddSingleton<ITaskLogic, T>();
+                .AddSingleton<ITaskLogic, T>()
+                .AddApiClients(r => r.RegisterContract<IProtocolApiV1>());
         }
 
         /// <summary>
@@ -49,7 +53,8 @@ namespace MyLab.TaskApp
 
             return srv
                 .Configure<TaskOptions>(config.GetSection(sectionName))
-                .AddHostedService<CirclePerformer>();
+                .AddHostedService<CirclePerformer>()
+                .AddApiClients(r => r.RegisterContract<IProtocolApiV1>());
         }
 
 

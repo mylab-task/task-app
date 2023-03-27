@@ -4,12 +4,22 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MyLab.TaskApp;
+using MyLab.TaskApp.IterationContext;
 using Xunit;
+using Xunit.Abstractions;
+using MyLab.Log.XUnit;
 
 namespace FuncTests
 {
     public class CirclePerformerBehavior
     {
+        private readonly ITestOutputHelper _output;
+
+        public CirclePerformerBehavior(ITestOutputHelper output)
+        {
+            _output = output;
+        }
+
         [Theory]
         [MemberData(nameof(GetPerformingTestCases))]
         public async Task ShouldPerformLogic(Exception logicException)
@@ -22,6 +32,7 @@ namespace FuncTests
                     .AddTaskLogic<TestTaskLogic>(logic)
                     .AddTaskCirclePerformer(context.Configuration)
                     .Configure<TaskOptions>(to => to.IdlePeriod = TimeSpan.FromMilliseconds(100))
+                    .AddLogging(b => b.AddXUnit(_output))
                 )
                 .Build();
 
@@ -53,13 +64,13 @@ namespace FuncTests
                 _needThrow = needThrow;
             }
 
-            public Task<IterationDesc> Perform(CancellationToken cancellationToken)
+            public Task PerformAsync(TaskIterationContext iterationContext, CancellationToken cancellationToken)
             {
                 InvokeCount = InvokeCount + 1;
                 if (_needThrow != null)
                     throw _needThrow;
 
-                return Task.FromResult(IterationDesc.EmptyIteration);
+                return Task.CompletedTask;
             }
         }
     }
