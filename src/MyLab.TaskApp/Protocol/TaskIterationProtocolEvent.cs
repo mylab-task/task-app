@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using MyLab.Log;
 using MyLab.ProtocolStorage.Client.Models;
 using MyLab.TaskApp.IterationContext;
 using Newtonsoft.Json;
@@ -17,5 +19,11 @@ namespace MyLab.TaskApp.Protocol
         [JsonProperty("kicker")]
         [JsonConverter(typeof(TaskEnumJsonConverter))]
         public TaskKicker Kicker { get; set; }
+        
+        [JsonProperty("duration")]
+        public TimeSpan Duration { get; set; }
+
+        [JsonProperty("error")]
+        public ExceptionDto Error { get; set; }
     }
 }

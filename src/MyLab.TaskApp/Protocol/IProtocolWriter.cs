@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using MyLab.ProtocolStorage.Client;
 using MyLab.TaskApp.IterationContext;
 
@@ -6,7 +7,7 @@ namespace MyLab.TaskApp.Protocol
 {
     interface IProtocolWriter
     {
-        Task WriteAsync(TaskIterationContext ctx);
+        Task WriteAsync(TaskIterationContext ctx, TimeSpan iterationDuration, Exception error = null);
     }
 
     class ProtocolWriter : IProtocolWriter
@@ -21,7 +22,7 @@ namespace MyLab.TaskApp.Protocol
             _indexer = indexer;
             _protocolId = protocolId;
         }
-        public Task WriteAsync(TaskIterationContext ctx)
+        public Task WriteAsync(TaskIterationContext ctx, TimeSpan iterationDuration, Exception error = null)
         {
             return _indexer.PostEventAsync(_protocolId, new TaskIterationProtocolEvent
             {
@@ -29,10 +30,12 @@ namespace MyLab.TaskApp.Protocol
                 DateTime = ctx.StartAt,
                 Metrics = ctx.Report?.Metrics,
                 Subject = ctx.Report?.SubjectId,
-                Type = "task-iteration",
+                Type = ProtocolEventConstants.Type,
                 TraceId = ctx.Id,
                 Kicker = TaskKicker,
-                Workload = ctx.Report?.Workload ?? IterationWorkload.Undefined
+                Workload = ctx.Report?.Workload ?? IterationWorkload.Undefined,
+                Duration = iterationDuration,
+                Error = error
             });
         }
     }

@@ -27,6 +27,14 @@ namespace MyLab.TaskApp
 
         public async Task PerformLogicAsync(CancellationToken cancellationToken)
         {
+            var ctx = new TaskIterationContext(
+                System.Diagnostics.Activity.Current?.TraceId.ToHexString(),
+                DateTime.Now
+            );
+
+            Exception iterationError = null;
+            
+
             try
             {
                 StatusService.LogicStarted();
@@ -34,17 +42,7 @@ namespace MyLab.TaskApp
                     .Action("Task logic has started")
                     .Write();
 
-                var ctx = new TaskIterationContext(
-                    System.Diagnostics.Activity.Current?.TraceId.ToHexString(),
-                    DateTime.Now
-                );
-
                 await TaskLogic.PerformAsync(ctx, cancellationToken);
-
-                if (ProtocolWriter != null)
-                {
-                    await ProtocolWriter.WriteAsync(ctx);
-                }
 
                 StatusService.LogicCompleted();
                 Logger?
@@ -53,10 +51,26 @@ namespace MyLab.TaskApp
             }
             catch (Exception e)
             {
+                iterationError = e;
+
                 StatusService.LogicError(e);
                 Logger?
                     .Error("Task logic has fail", e)
                     .Write();
+            }
+
+            if (ProtocolWriter != null)
+            {    
+                try
+                {
+                    await ProtocolWriter.WriteAsync(ctx, DateTime.Now - ctx.StartAt, iterationError);
+                }
+                catch (Exception e)
+                {
+                    Logger?
+                        .Error("Protocol writing error", e)
+                        .Write();
+                }
             }
         }
     }

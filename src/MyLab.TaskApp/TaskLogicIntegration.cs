@@ -26,7 +26,7 @@ namespace MyLab.TaskApp
             return srv
                 .AddSingleton<ITaskStatusService, DefaultTaskStatusService>()
                 .AddSingleton<ITaskLogic>(logic)
-                .AddApiClients(r => r.RegisterContract<IProtocolApiV1>());
+                .AddOptionalApiClients(r => r.RegisterContract<IProtocolApiV1>());
         }
 
         /// <summary>
@@ -40,7 +40,7 @@ namespace MyLab.TaskApp
             return srv
                 .AddSingleton<ITaskStatusService, DefaultTaskStatusService>()
                 .AddSingleton<ITaskLogic, T>()
-                .AddApiClients(r => r.RegisterContract<IProtocolApiV1>());
+                .AddOptionalApiClients(r => r.RegisterContract<IProtocolApiV1>());
         }
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace MyLab.TaskApp
             return srv
                 .Configure<TaskOptions>(config.GetSection(sectionName))
                 .AddHostedService<CirclePerformer>()
-                .AddApiClients(r => r.RegisterContract<IProtocolApiV1>());
+                .AddOptionalApiClients(r => r.RegisterContract<IProtocolApiV1>());
         }
 
 

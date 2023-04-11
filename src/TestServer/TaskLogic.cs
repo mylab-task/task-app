@@ -10,6 +10,13 @@ namespace TestServer
     {
         public Task PerformAsync(TaskIterationContext iterationContext, CancellationToken cancellationToken)
         {
+            iterationContext.Report = new IterationReport
+            {
+                SubjectId = "foo",
+                Workload = IterationWorkload.Useful,
+                CorrelationId = "bar"
+            };
+
             return Task.Delay(200, cancellationToken);
         }
     }

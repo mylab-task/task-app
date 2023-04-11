@@ -33,7 +33,7 @@ namespace MyLab.TaskApp
             {
                 protocolWriter = new ProtocolWriter(
                     new SafeProtocolIndexerV1(protocolApi, log), 
-                    opts.IterationProtocolId)
+                    opts.ProtocolId)
                 {
                     TaskKicker = TaskKicker.Scheduler
                 };

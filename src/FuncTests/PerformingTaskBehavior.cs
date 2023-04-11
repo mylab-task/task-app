@@ -2,8 +2,14 @@
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.Extensions.DependencyInjection;
+using Moq;
+using MyLab.ProtocolStorage.Client;
+using MyLab.ProtocolStorage.Client.Models;
 using MyLab.StatusProvider;
 using MyLab.TaskApp;
+using MyLab.TaskApp.IterationContext;
+using MyLab.TaskApp.Protocol;
 using Newtonsoft.Json;
 using TestServer;
 using Xunit;
@@ -82,7 +88,7 @@ namespace FuncTests
         }
 
         [Fact]
-        public async Task ShouldReturnSpecialCodeIfLogicAlreadyPrforming()
+        public async Task ShouldReturnSpecialCodeIfLogicAlreadyPerforming()
         {
             //Arrange
             var cl = _clientFactory.CreateClient();
@@ -94,6 +100,52 @@ namespace FuncTests
             
             //Assert
             Assert.Equal(HttpStatusCode.AlreadyReported, statusResp.StatusCode);
+        }
+
+        [Fact]
+        public async Task ShouldWriteProtocol()
+        {
+            //Arrange
+            string capturedProtocolId = null;
+            ProtocolEvent capturedProtocolEvent = null;
+            TaskIterationProtocolEvent capturedTaskProtocolEvent = null;
+
+            var protocolMock = new Moq.Mock<IProtocolApiV1>();
+
+            protocolMock
+                .Setup(p => p.PostEventAsync(It.IsAny<string>(), It.IsAny<ProtocolEvent>()))
+                .Returns<string, ProtocolEvent>((pId, pEvent) =>
+                {
+                    capturedProtocolEvent = pEvent;
+                    capturedTaskProtocolEvent = pEvent as TaskIterationProtocolEvent;
+                    capturedProtocolId = pId;
+                    return Task.CompletedTask;
+                });
+
+            var cl = _clientFactory.WithWebHostBuilder(
+                b =>
+                    b.ConfigureServices(s => s.AddSingleton(protocolMock.Object))
+                )
+                .CreateClient();
+
+            //Act
+            var statusResp = await cl.PostAsync("/processing", null);
+
+            await Task.Delay(500);
+
+            if (capturedTaskProtocolEvent != null)
+                _output.WriteLine(JsonConvert.SerializeObject(capturedTaskProtocolEvent, Formatting.Indented));
+
+            //Assert
+            Assert.Equal(HttpStatusCode.OK, statusResp.StatusCode);
+            Assert.Equal(ProtocolEventConstants.DefaultProtocolId, capturedProtocolId);
+            Assert.NotNull(capturedProtocolEvent);
+            Assert.Equal(ProtocolEventConstants.Type, capturedProtocolEvent.Type);
+            Assert.NotNull(capturedTaskProtocolEvent);
+            Assert.Equal(IterationWorkload.Useful, capturedTaskProtocolEvent.Workload);
+            Assert.Equal("bar", capturedTaskProtocolEvent.Id);
+            Assert.Equal("foo", capturedTaskProtocolEvent.Subject);
+            Assert.Equal(TaskKicker.Api, capturedTaskProtocolEvent.Kicker);
         }
     }
 }

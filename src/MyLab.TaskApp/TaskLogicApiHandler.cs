@@ -81,7 +81,7 @@ namespace MyLab.TaskApp
             {
                 protocolWriter = new ProtocolWriter(
                     new SafeProtocolIndexerV1(protocolApi, dslLog),
-                    options?.Value.IterationProtocolId
+                    options?.Value.ProtocolId ?? ProtocolEventConstants.DefaultProtocolId
                     )
                 {
                     TaskKicker = TaskKicker.Api

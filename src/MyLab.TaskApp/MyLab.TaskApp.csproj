@@ -20,11 +20,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="MyLab.ApiClient" Version="3.16.27" />
+    <PackageReference Include="MyLab.ApiClient" Version="3.17.27" />
     <PackageReference Include="MyLab.Log" Version="3.5.24" />
     <PackageReference Include="MyLab.Log.Dsl" Version="3.5.4" />
-    <PackageReference Include="MyLab.ProtocolStorage.Client" Version="1.3.5" />
+    <PackageReference Include="MyLab.ProtocolStorage.Client" Version="1.4.5" />
     <PackageReference Include="MyLab.StatusProvider" Version="1.5.9" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="FuncTests" />
   </ItemGroup>
 
   <ItemGroup>
