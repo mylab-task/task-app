@@ -2,6 +2,8 @@
 using System.Threading;
 using System.Threading.Tasks;
 using MyLab.Log.Dsl;
+using MyLab.TaskApp.IterationContext;
+using MyLab.TaskApp.Protocol;
 
 namespace MyLab.TaskApp
 {
@@ -9,8 +11,8 @@ namespace MyLab.TaskApp
     {
         public ITaskLogic TaskLogic { get; }
         public ITaskStatusService StatusService { get; }
-
         public IDslLogger Logger { get; set; }
+        public IProtocolWriter ProtocolWriter{ get; set; }
 
         public TaskLogicPerformer(ITaskLogic taskLogic, ITaskStatusService statusService)
         {
@@ -18,20 +20,30 @@ namespace MyLab.TaskApp
             StatusService = statusService ?? throw new ArgumentNullException(nameof(statusService));
         }
 
-        public void PerformLogicParallel()
+        public void PerformLogicParallel(CancellationToken cancellationToken)
         {
-            Task.Run(PerformLogicAsync);
+            Task.Run(() => PerformLogicAsync(cancellationToken), cancellationToken);
         }
 
-        async Task PerformLogicAsync()
+        public async Task PerformLogicAsync(CancellationToken cancellationToken)
         {
+            var ctx = new TaskIterationContext(
+                System.Diagnostics.Activity.Current?.TraceId.ToHexString(),
+                DateTime.Now
+            );
+
+            Exception iterationError = null;
+            
+
             try
             {
                 StatusService.LogicStarted();
                 Logger?
                     .Action("Task logic has started")
                     .Write();
-                await TaskLogic.Perform(CancellationToken.None);
+
+                await TaskLogic.PerformAsync(ctx, cancellationToken);
+
                 StatusService.LogicCompleted();
                 Logger?
                     .Action("Task logic has completed")
@@ -39,10 +51,26 @@ namespace MyLab.TaskApp
             }
             catch (Exception e)
             {
+                iterationError = e;
+
                 StatusService.LogicError(e);
                 Logger?
                     .Error("Task logic has fail", e)
                     .Write();
+            }
+
+            if (ProtocolWriter != null)
+            {    
+                try
+                {
+                    await ProtocolWriter.WriteAsync(ctx, DateTime.Now - ctx.StartAt, iterationError);
+                }
+                catch (Exception e)
+                {
+                    Logger?
+                        .Error("Protocol writing error", e)
+                        .Write();
+                }
             }
         }
     }

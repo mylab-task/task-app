@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using MyLab.TaskApp.IterationContext;
 
 namespace MyLab.TaskApp
 {
@@ -11,6 +12,6 @@ namespace MyLab.TaskApp
         /// <summary>
         /// Performs a task logic
         /// </summary>
-        Task Perform(CancellationToken cancellationToken);
+        Task PerformAsync(TaskIterationContext iterationContext, CancellationToken cancellationToken);  
     }
 }
