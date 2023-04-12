@@ -16,5 +16,10 @@ namespace MyLab.TaskApp
         /// Iteration protocol identifier
         /// </summary>
         public string ProtocolId { get; set; }
+
+        /// <summary>
+        /// Protocol event type
+        /// </summary>
+        public string ProtocolType { get; set; }
     }
 }

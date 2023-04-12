@@ -79,12 +79,11 @@ namespace MyLab.TaskApp
 
             if (protocolApi != null)
             {
-                protocolWriter = new ProtocolWriter(
-                    new SafeProtocolIndexerV1(protocolApi, dslLog),
-                    options?.Value.ProtocolId ?? ProtocolEventConstants.DefaultProtocolId
-                    )
+                protocolWriter = new ProtocolWriter(new SafeProtocolIndexerV1(protocolApi, dslLog))
                 {
-                    TaskKicker = TaskKicker.Api
+                    TaskKicker = TaskKicker.Api,
+                    ProtocolId = options?.Value.ProtocolId,
+                    ProtocolType = options?.Value.ProtocolType
                 };
             }
 
