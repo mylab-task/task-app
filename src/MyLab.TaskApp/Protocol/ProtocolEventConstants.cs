@@ -2,7 +2,7 @@
 {
     public static class ProtocolEventConstants
     {
-        public const string Type = "task-iteration";
+        public const string DefaultType = "task-iteration";
         public const string DefaultProtocolId = "tasks";
     }
 }

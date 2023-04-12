@@ -25,17 +25,18 @@ namespace MyLab.TaskApp
         {
             var log = logger?.Dsl();
 
-            var opts = options.Value;
+            var opts = options?.Value;
 
             IProtocolWriter protocolWriter = null;
 
             if (protocolApi != null)
             {
                 protocolWriter = new ProtocolWriter(
-                    new SafeProtocolIndexerV1(protocolApi, log), 
-                    opts.ProtocolId)
+                    new SafeProtocolIndexerV1(protocolApi, log))
                 {
-                    TaskKicker = TaskKicker.Scheduler
+                    TaskKicker = TaskKicker.Scheduler,
+                    ProtocolType = opts?.ProtocolType,
+                    ProtocolId = opts?.ProtocolId
                 };
             }
 
@@ -45,7 +46,7 @@ namespace MyLab.TaskApp
                 ProtocolWriter = protocolWriter
             };
 
-            if (options.Value == null || options.Value.IdlePeriod == default)
+            if (opts == null || opts.IdlePeriod == default)
                 _period = TimeSpan.FromSeconds(1);
             else
             {

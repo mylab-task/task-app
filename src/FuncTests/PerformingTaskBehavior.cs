@@ -124,7 +124,11 @@ namespace FuncTests
 
             var cl = _clientFactory.WithWebHostBuilder(
                 b =>
-                    b.ConfigureServices(s => s.AddSingleton(protocolMock.Object))
+                    b.ConfigureServices(s =>
+                    {
+                        s.AddSingleton(protocolMock.Object);
+                        s.Configure<TaskOptions>(o => o.ProtocolType = "baz");
+                    })
                 )
                 .CreateClient();
 
@@ -140,7 +144,7 @@ namespace FuncTests
             Assert.Equal(HttpStatusCode.OK, statusResp.StatusCode);
             Assert.Equal(ProtocolEventConstants.DefaultProtocolId, capturedProtocolId);
             Assert.NotNull(capturedProtocolEvent);
-            Assert.Equal(ProtocolEventConstants.Type, capturedProtocolEvent.Type);
+            Assert.Equal("baz", capturedProtocolEvent.Type);
             Assert.NotNull(capturedTaskProtocolEvent);
             Assert.Equal(IterationWorkload.Useful, capturedTaskProtocolEvent.Workload);
             Assert.Equal("bar", capturedTaskProtocolEvent.Id);
