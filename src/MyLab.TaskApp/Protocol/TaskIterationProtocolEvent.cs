@@ -21,6 +21,7 @@ namespace MyLab.TaskApp.Protocol
         public TaskKicker Kicker { get; set; }
         
         [JsonProperty("duration")]
+        [JsonConverter(typeof(TimeSpanToMsJsonConverter))]
         public TimeSpan Duration { get; set; }
 
         [JsonProperty("error")]
