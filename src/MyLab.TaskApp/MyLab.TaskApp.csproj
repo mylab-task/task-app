@@ -9,10 +9,10 @@
     <RepositoryUrl>https://github.com/ozzy-ext-mylab/task-app.git</RepositoryUrl>
     <PackageProjectUrl>https://github.com/ozzy-ext-mylab/task-app</PackageProjectUrl>
     <RepositoryType>git</RepositoryType>
-    <AssemblyVersion>1.5.6.1204</AssemblyVersion>
-    <FileVersion>1.5.6.1204</FileVersion>
+    <AssemblyVersion>1.6.6.1304</AssemblyVersion>
+    <FileVersion>1.6.6.1304</FileVersion>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.5.6</Version>
+    <Version>1.6.6</Version>
   </PropertyGroup>
 
   <ItemGroup>

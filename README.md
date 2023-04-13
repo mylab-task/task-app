@@ -69,6 +69,19 @@ public interface ITaskLogic
   services.AddTaskLogic(logic);
   ```
 
+* с настройками
+  ```c#
+  services.AddTaskLogic<MyLogic>()
+      .ConfigureTask(Configuration);
+  ```
+
+* с циклическим запуском
+  ```C#
+  services.AddTaskLogic<MyLogic>()
+      .AddTaskCirclePerformer()
+      .ConfigureTask(Configuration);
+  ```
+
 Интеграция  в пайплайн обработки `http` запросов:
 
 ```C#
@@ -86,7 +99,8 @@ IConfiguration _config;
 
 //...
 
-services.AddTaskCirclePerformer(_config);
+services.AddTaskCirclePerformer()
+    .ConfigureTask(_config);
 ```
 
 ### Конфигурация периодического запуска
