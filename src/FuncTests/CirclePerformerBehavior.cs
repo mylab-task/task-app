@@ -29,8 +29,8 @@ namespace FuncTests
 
             var serviceHost = new HostBuilder()
                 .ConfigureServices((context, sc) => sc
-                    .AddTaskLogic<TestTaskLogic>(logic)
-                    .AddTaskCirclePerformer(context.Configuration)
+                    .AddTaskLogic(logic)
+                    .AddTaskCirclePerformer()
                     .Configure<TaskOptions>(to => to.IdlePeriod = TimeSpan.FromMilliseconds(100))
                     .AddLogging(b => b.AddXUnit(_output))
                 )

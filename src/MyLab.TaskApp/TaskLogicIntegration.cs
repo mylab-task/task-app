@@ -46,6 +46,7 @@ namespace MyLab.TaskApp
         /// <summary>
         /// Add circle logic performer
         /// </summary>
+        [Obsolete("Please, use AddTaskCirclePerformer(srv) and ConfigureTask(...) separately")]
         public static IServiceCollection AddTaskCirclePerformer(this IServiceCollection srv, IConfiguration config, string sectionName = DefaultConfigSectionName)
         {
             if (srv == null) throw new ArgumentNullException(nameof(srv));
@@ -55,6 +56,33 @@ namespace MyLab.TaskApp
                 .Configure<TaskOptions>(config.GetSection(sectionName))
                 .AddHostedService<CirclePerformer>()
                 .AddOptionalApiClients(r => r.RegisterContract<IProtocolApiV1>());
+        }
+
+        /// <summary>
+        /// Add circle logic performer
+        /// </summary>
+        public static IServiceCollection AddTaskCirclePerformer(this IServiceCollection srv)
+        {
+            if (srv == null) throw new ArgumentNullException(nameof(srv));
+
+            return srv
+                .AddHostedService<CirclePerformer>()
+                .AddOptionalApiClients(r => r.RegisterContract<IProtocolApiV1>());
+        }
+
+        /// <summary>
+        /// Configures Task performing
+        /// </summary>
+        public static IServiceCollection ConfigureTask(this IServiceCollection srv, 
+            IConfiguration config,
+            string sectionName = DefaultConfigSectionName)
+        {
+            if (srv == null) throw new ArgumentNullException(nameof(srv));
+            if (config == null) throw new ArgumentNullException(nameof(config));
+
+            return srv
+                .Configure<TaskOptions>(config.GetSection(sectionName))
+                .ConfigureApiClients(config);
         }
 
 
